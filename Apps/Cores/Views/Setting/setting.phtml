@@ -1,0 +1,94 @@
+<?php
+
+namespace Apps\Cores\Views\Setting;
+
+use Libs\Setting;
+
+$this->setTitle('Tùy chỉnh');
+?>
+
+<style>
+    #frmMain{border-left: 1px solid #ddd;padding-left: 10px;}
+    #frmMain .form-group{max-width: 600px;}
+    a.setting-group{display: block;padding: 10px;border-bottom: 1px solid #eee;}
+    a.setting-group.active{background: #EEEEEE;}
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1 class="page-header">Tùy chỉnh</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-4">
+        <?php foreach (Setting::getAllApp() as $appId): ?>
+            <?php
+            $setting = new Setting($appId);
+            if (!$setting->xml->settings || $setting->xml->attributes()->active != 'true')
+            {
+                continue;
+            }
+            ?>
+            <table style="width: 100%;" class="table-hover">
+                <?php foreach ($setting->xml->settings->group as $groupXml): ?>
+                    <tr>
+                        <td>
+                            <?php if ($appId == $pAppId && $groupXml->attributes()->name == $pGroupName): ?>
+                                <a class="setting-group active"><?php echo $groupXml->attributes()->name ?></a>
+                            <?php else: ?>
+                                <a class="setting-group" href="?appId=<?php echo $appId ?>&group=<?php echo $groupXml->attributes()->name ?>">
+                                    <?php echo $groupXml->attributes()->name ?>
+                                </a>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+
+        <?php endforeach; ?>
+    </div>
+    <div class="col-xs-8">
+        <?php $setting = new Setting($pAppId); ?>
+        <?php if ($setting->xml->attributes()->active == 'true'): ?>
+            <form method="post" id="frmMain" action="<?php echo url('/admin/setting/update') ?>" class="form-horizontal">
+                <input type="hidden" name="appId" value="<?php echo $pAppId ?>"/>
+                <input type="hidden" name="groupName" value="<?php echo $pGroupName ?>"/>
+                <fieldset>
+                    <legend><?php echo $setting->xml->attributes()->name . '/' . $pGroupName ?></legend>
+                </fieldset>
+                <?php
+                foreach ($setting->xml->settings->group as $group)
+                {
+                    if ($group->attributes()->name != $pGroupName)
+                    {
+                        continue;
+                    }
+                    foreach ($group->field as $field)
+                    {
+                        switch ((string) $field->type) {
+                            case 'string':
+                                echo new StringControl($field);
+                                break;
+                            case 'text':
+                                echo new TextControl($field);
+                                break;
+                            case 'boolean':
+                                echo new BooleanControl($field);
+                                break;
+                            case 'select':
+                                echo new SelectControl($field);
+                                break;
+                        }
+                    }
+                }
+                ?>
+                <div class="row form-group">
+                    <div class="col-xs-offset-4 col-xs-8">
+                        <input type="submit" value="Ghi lại" class="btn btn-primary"/>
+                    </div>
+                </div>
+            </form>
+        <?php endif; ?>
+    </div>
+</div>

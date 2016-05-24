@@ -1,0 +1,132 @@
+<?php
+$this->addJs(array(
+    $this->themeUrl() . '/js/views/editField.js',
+    $this->themeUrl() . '/js/views/paging.js'
+));
+
+$this->setNgApp('fieldModule');
+?>
+<div ng-controller="fieldCtrl">
+    <div class="col-md-12">
+        <h1>Quản lý lĩnh vực</h1>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-click="showNewModal()"><i class="fa fa-plus"></i> Thêm mới</button>
+            <button type="button" class="btn btn-default" ng-click="deletes()"><i class="fa fa-trash"></i> Xóa</button>
+        </div>
+        <div class="col-md-6">
+            <input type="search" class="form-control col-xs-4" id="keyword" ng-change="searchByName()" ng-model="filter.name" placeholder="Điền tên cần tìm kiếm">
+        </div>
+    </div>
+    <div class="col-md-12  table-member">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td><input type="checkbox" ng-model="checkAll"></td>
+                    <td></td>
+                    <td>Tên lĩnh vực</td>
+                    <td>Mã lĩnh vực</td>
+                    <td>Trạng thái đơn vị</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in data">
+                    <td><input type="checkbox" id="{{item.pk}}"></td>
+                    <td class="tbl-actions center">
+                        <div class="dropdown">
+                            <a href="javascript:;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:;" data-toggle="modal" data-target="#myModal" ng-click="edit(item)">Sửa</a></li>
+                                <li><a href="javascript:;" ng-click="delete(item)">Xóa</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td>{{item.c_name}}</td>
+                    <td>{{item.c_code}}</td>
+                    <td>
+                        <span ng-if="item.c_status == true">Có hoạt động</span>
+                        <span ng-if="item.c_status == false">Không hoạt động</span>
+                    <!--</td>-->
+<!--                        <input type="checkbox" ng-model="item.c_status">{{item.c_status}}-->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="float:right">
+            <paging
+                page="filter.page" 
+                page-size="filter.row_per_page"
+                total="filter.total"
+                paging-action="pagingaction('Paging Clicked',filter.page,filter.row_per_page,data.total)"
+                scroll-top="true" 
+                hide-if-empty="true"
+                show-prev-next="true"
+                show-first-last="true"
+                text-first="Đầu"
+                text-last="Cuối"
+                text-next="Sau"
+                text-prev="Trước">
+            </paging>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="col-xs-12">
+                    <h3>Quản lý lĩnh vực</h3>
+                </div>
+                <div class='col-xs-12' style="padding:10px 0;">
+                    <label class="control-label col-xs-4" for="code">Tên lĩnh vực <span style="color:red">(*)</span>:</label>
+                    <div class="col-xs-8 padding-form">          
+                        <input required class="form-control" id="code" ng-model="modal.c_name" placeholder="Điền tên ( bắt buộc )">
+                    </div>
+                </div>
+                <div class='col-xs-12' style="padding:10px 0;">
+                    <label class="control-label col-xs-4" for="code">Mã lĩnh vực <span style="color:red">(*)</span>:</label>
+                    <div class="col-xs-8 padding-form">          
+                        <input required class="form-control" id="code" ng-model="modal.c_code" placeholder="Điền mã ( bắt buộc )">
+                    </div>
+                </div>
+                <div class='col-xs-12' style="padding:10px 0;">
+                    <label class="control-label col-xs-4" for="code">Sắp xếp:</label>
+                    <div class="col-xs-8 padding-form">          
+                        <input class="form-control" id="code" ng-model="modal.c_order" placeholder="Sắp xếp">
+                    </div>
+                </div>
+                <div class='col-xs-12' style="padding:10px 0;">
+                    <label class="col-xs-8 col-xs-offset-4 padding-form">          
+                        <input type="checkbox" ng-model="modal.c_status"> Hoạt động
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="addBtn" class="btn btn-primary" ng-click="add()">Thêm mới</button>
+                    <button type="button" id="editBtn" class="btn btn-primary" ng-click="save()">Lưu</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy bỏ</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<style>
+    .table-member
+    {
+        padding-top: 15px;
+    }
+    .table-member::-webkit-scrollbar {
+        width: 8px;
+    }
+    .table-member::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    } 
+    .table-member::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        background: rgb(199,199,199); 
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    }
+</style>

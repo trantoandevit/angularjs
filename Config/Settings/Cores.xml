@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application name="Quản trị hệ thống" active="true">
+  <permissions>
+    <group name="Nhóm 1">
+      <pem id="quyen1" name="Quyền 1"/>
+      <pem id="quyen2" name="Quyền 2"/>
+      <pem id="quyen3" name="Quyền 3"/>
+    </group>
+  </permissions>
+  <settings>
+    <group name="Giao diện">
+      <field>
+        <id>themeAppName</id>
+        <label>App name</label>
+        <type>string</type>
+        <value>Framework lõi hệ thống</value>
+      </field>
+      <field>
+        <id>themeBrand</id>
+        <label>Brand</label>
+        <type>string</type>
+        <value>Cores</value>
+      </field>
+      <field>
+        <id>themeCompanyWebsite</id>
+        <label>Company website</label>
+        <type>string</type>
+        <value>www.tamviettech.vn</value>
+      </field>
+    </group>
+    <group name="Email SMTP">
+      <field>
+        <id>smtpServer</id>
+        <label>Máy chủ mail</label>
+        <type>string</type>
+        <placeholder>vd: smtp.tamviettech.vn</placeholder>
+        <value>tét11</value>
+      </field>
+      <field>
+        <id>smtpFrom</id>
+        <label>Địa chỉ gửi</label>
+        <type>string</type>
+        <placeholder>vd: demo@tamviettech.vn</placeholder>
+        <value>té1</value>
+      </field>
+      <field>
+        <id>smtpUser</id>
+        <label>Tài khoản</label>
+        <type>string</type>
+        <placeholder>vd: demo@tamviettech.vn</placeholder>
+        <value>dff&lt;?</value>
+      </field>
+      <field>
+        <id>smtpPassword</id>
+        <label>Mật khẩu</label>
+        <type>password</type>
+        <placeholder/>
+        <value/>
+      </field>
+      <field>
+        <id>smtpTsl</id>
+        <label>Sử dụng TSL</label>
+        <type>boolean</type>
+        <value>true</value>
+      </field>
+      <field>
+        <id>smtpPort</id>
+        <label>Cổng</label>
+        <type>string</type>
+        <placeholder>587 hoặc 25</placeholder>
+        <value>sdfff</value>
+      </field>
+      <field>
+        <id>smtpText</id>
+        <label>Textarea</label>
+        <type>text</type>
+        <placeholder>textarea input</placeholder>
+        <value>es</value>
+      </field>
+      <field>
+        <id>smtpSelect</id>
+        <label>Select</label>
+        <type>select</type>
+        <value>red</value>
+        <options>
+          <option value="red">red</option>
+          <option value="green">green</option>
+          <option value="blue">blue</option>
+        </options>
+      </field>
+    </group>
+  </settings>
+</application>

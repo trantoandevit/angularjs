@@ -1,0 +1,45 @@
+<?php
+$this->setTitle('Nhập tài khoản từ Excel');
+?>
+
+<style>
+    #upload{display: none;}
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1 class="page-header">Nhập tài khoản từ Excel</h1>
+    </div>
+</div>
+
+<?php if (isset($error)): ?>
+    <div class="alert alert-danger">
+        <?php echo $error ?>
+    </div>
+<?php endif; ?>
+<form method="post" enctype="multipart/form-data">
+    <div class="alert alert-info">
+        <button type="button" class="btn btn-primary" onclick="$('#upload').click()"><i class="fa fa-upload"></i> Chọn file excel</button>
+        <input type="file" name="upload" id="upload" accept=".xlsx" onchange="fileChosen(this)"/>
+
+        <a class="btn btn-success" href="<?php echo url('/app-assets/mau-nhap-tai-khoan.xlsx') ?>"><i class="fa fa-download"></i> Download file excel mẫu</a>
+        <a class="btn btn-default" href="<?php echo url('/admin/user') ?>"><i class="fa fa-arrow-left"></i> Quay lại</a>
+        <h4></h4>
+        Hướng dẫn:<br>
+        <ul>
+            <li>Trường có dấu &#10033; bắt buộc nhập</li>
+            <li><strong>depFk</strong> nhập theo dạng "tên [id]", vd: Hành chính [3]</li>
+            <li><strong>groups</strong> có thể nhập nhiều id nhóm, tách nhau bằng dấu "phẩy" hoặc xuống dòng</li>
+            <li><strong>permissions</strong> có thể nhập nhiều quyền, tách nhau bằng dấu "phẩy" hoặc xuống dòng</li>
+        </ul>
+    </div>
+</form>
+
+<script>
+    function fileChosen(elm) {
+        if (!elm.value)
+            return;
+
+        elm.form.submit();
+    }
+</script>

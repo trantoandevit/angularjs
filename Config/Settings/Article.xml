@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application name="Tin bài" active="true">
+  <permissions>
+    <group name="Nhóm chỉnh sửa">
+      <pem id="vietnhap" name="Viết nháp"/>
+      <pem id="bientap" name="Biên tập"/>
+      <pem id="duyet" name="Duyệt"/>
+    </group>
+  </permissions>
+</application>

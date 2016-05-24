@@ -1,0 +1,222 @@
+<?php
+
+namespace Apps\Cores\Views\Layouts;
+
+use Apps\Cores\Models\DepartmentEntity;
+
+/* @var $this TwoColsLayout */
+/* @var $department DepartmentEntity */
+/* @var $editDep DepartmentEntity */
+$this->setTitle('Tài khoản')
+        ->addJs(array(
+            $this->themeUrl() . '/components/DepartmentPicker/DepartmentPicker.js',
+            $this->themeUrl() . '/js/views/userCtrl.js',
+        ));
+?>
+
+<style>
+    .tbl-row{height: 40px;position: relative;}
+    table .fa-folder-open{color: #fbc02d;}
+    table .fa-user{color: #ccc;}
+    .tbl-type .fa{font-size: 1.5em;}
+    table th{min-width: 50px;}
+    table th:last-child{width: 100%;}
+    .parent-dep{position: relative;}
+    .parent-dep > span{position: absolute;right: 10px;top:0; height: 34px; line-height: 34px;display: inline-block;font-size: 21px;}
+    #editDep{background: white;cursor: pointer;}
+    span.id{color: gray}
+</style>
+
+<angular ng-cloak ng-controller="userCtrl">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="page-header">Tài khoản</h1>
+        </div>
+    </div>
+    <ol class="breadcrumb">
+        <li>
+            <div class="btn-group">
+                <a href="javascript:;" ng-class="<?php echo "{'disabled': !depPk}" ?>" ng-click="goUp()"  class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Quay lại">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a href="#" ng-class="<?php echo "{'disabled': !depPk}" ?>" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Trở về gốc">
+                    <i class="fa fa-home"></i>
+                </a>
+            </div>
+        </li>
+        <li ng-repeat="ancestor in department.ancestors">
+            <a href="#/{{ancestor.pk}}">{{ancestor.depName}}</a>
+        </li>
+        <li class="active">{{department.depName}}</li>
+    </ol>
+    <form class="panel panel-info panel-filter" ng-class="<?php echo "{'minimize': !showFilter}" ?>">
+        <div class="panel-heading">
+            Bộ lọc
+            <div class="panel-actions">
+                <a href="javascript:;" data-toggle="tooltip" data-placement="top" title="Phóng to/Thu nhỏ" ng-click="toggleFilter()">
+                    <i class="fa" ng-class="<?php echo "{'fa-minus-square-o': showFilter, 'fa-plus-square-o': !showFilter}" ?>"></i>
+                </a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div  class="col-md-6">
+                    <label for="filter-name">Tìm kiếm</label>
+                    <input type="text" class="form-control"  id="filter-name" name="search" placeholder="đơn vị, người dùng" ng-model="filter.search"/>
+                </div>
+            </div>
+            <h4></h4>
+        </div>
+
+
+    </form>
+
+    <h4></h4>
+    <table class="table table-record table-bordered table-striped table-hover" ng-show="department">
+        <thead>
+            <tr>
+                <td colspan="5">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-plus"></i> Thêm mới
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;" ng-click="editUser()">Thêm tài khoản</a></li>
+                            <li><a href="javascript:;" ng-click="editDep()">Thêm đơn vị</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-default" ng-disabled="!anythingChecked()" ng-click="move()"><i class="fa fa-exchange"></i> Chuyển tới</button>
+                    <button type="button" class="btn btn-default" ng-disabled="!anythingChecked()" ng-click="delete()"><i class="fa fa-trash"></i> Xóa</button>
+                </td>
+            </tr>
+            <tr>
+                <th class="center">
+                    <label class="check">
+                        <input type="checkbox" />
+                        <before></before>
+                        <after></after>
+                    </label>
+                </th>
+                <th class="center">Loại</th>
+                <th></th>
+                <th>ID</th>
+                <th>Tên</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-if="department && !department.users.length && !department.deps.length">
+                <td colspan="4" class="center"><Br>Chưa có thư mục và tài khoản trong đơn vị.<br>&nbsp;</td>
+            </tr>
+            <tr ng-if="searchResult && !searchResult.users.length && !searchResult.departments.length">
+                <td colspan="4" class="center"><Br>Không tìm thấy kết quả nào.<br>&nbsp;</td>
+            </tr>
+
+            <tr ng-repeat="childDep in deps()" ng-class="<?php echo "{'stt-active': childDep.stt, 'stt-inactive': !childDep.stt}" ?>">
+                <td class="center ">
+                    <div class="tbl-check">
+                        <label class="check">
+                            <input type="checkbox" value="{{childDep.pk}}" ng-model="checkedDeps[childDep.pk]" />
+                            <before></before>
+                            <after></after>
+                        </label>
+                    </div>
+                </td>
+                <td class="tbl-type center">
+                    <i class="fa fa-folder-open"></i>
+                </td>
+                <td class="tbl-actions center">
+                    <div class="dropdown">
+                        <a href="javascript:;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;" ng-click="editDep(childDep)">Sửa</a></li>
+                            <li><a href="javascript:;" ng-click="deleteDep(childDep)">Xóa</a></li>
+                        </ul>
+                    </div>
+                </td>
+                <td><span class="id">{{childDep.pk}}</span></td>
+                <td class="tbl-text">
+                    <a href="#/{{childDep.pk}}">{{childDep.depName}}</a> 
+                    <br>
+                    Đơn vị/Phòng ban
+                </td>
+            </tr>
+            <tr ng-repeat="user in users()" ng-class="<?php echo "{'stt-active': user.stt, 'stt-inactive': !user.stt}" ?>">
+                <td class="center">
+                    <div class="tbl-check">
+                        <label class="check" >
+                            <input type="checkbox" value="{{user.pk}}" ng-model="checkedUsers[user.pk]" ng-disabled="user.isAdmin"/>
+                            <before></before>
+                            <after></after>
+                        </label>
+                    </div>
+                </td>
+                <td class="tbl-type center">
+                    <i class="fa fa-user"></i>
+                </td>
+                <td class="tbl-actions center">
+                    <div class="dropdown">
+                        <a href="javascript:;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;" ng-click="editUser(user)">Sửa</a></li>
+                            <li><a href="javascript:;" ng-click="copyUser(user)">Sao chép</a></li>
+                            <li><a href="javascript:;" ng-if="!user.isAdmin" ng-click="deleteUser(user)">Xóa</a></li>
+                        </ul>
+                    </div>
+                </td>
+                <td><span class="id">{{user.pk}}</span></td>
+                <td class="tbl-text">
+                    <a href="javascript:;" ng-click="editUser(user)">{{user.fullName}}</a>
+                    <br>
+                    {{user.jobTitle}}
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5">
+                    <div class="pull-left">
+                        <span class="dropdown select">
+                            <button class="btn btn-default" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                20 <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-bottom">
+                                <li class="active"><a href="javascript:;">20</a></li>
+                                <li><a href="javascript:;">50</a></li>
+                                <li><a href="javascript:;">100</a></li>
+                                <li><a href="javascript:;">200</a></li>
+                            </ul>
+                        </span>
+                        bản ghi/trang
+                    </div>
+                    <div class="pull-right">
+
+                        Chuyển đến trang
+                        <span class="dropdown select">
+                            <button class="btn btn-default" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                1 <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu-bottom">
+                                <li class="active"><a href="javascript:;">1</a></li>
+                                <li><a href="javascript:;">2</a></li>
+                                <li><a href="javascript:;">3</a></li>
+                                <li><a href="javascript:;">4</a></li>
+                                <li><a href="javascript:;">5</a></li>
+                                <li><a href="javascript:;">Nhập số</a></li>
+                            </ul>
+                        </span>
+                        tổng số 50 bản ghi
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!--department form-->
+    <?php require __DIR__ . '/editDep.phtml' ?>
+    <!--user form-->
+    <?php require __DIR__ . '/editUser.phtml' ?>
+
+    <!--department picker-->
+    <div ng-department-picker></div>
+</angular>

@@ -1,0 +1,56 @@
+<?php
+$this->setTitle('Đăng nhập');
+?>
+
+<div class="container" ng-app="sb2" ng-controller="loginCtrl">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="login-panel panel panel-default">
+                <div class="panel-heading">
+                    <?php echo $appName ?>
+                </div>
+                <div class="panel-body">
+                    <form role="form" method="post" class="form-validate">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="account">Tài khoản:</label>
+                                <input class="form-control"name="account" id="account" type="text" autofocus="" required value="<?php echo isset($account) ? $account : '' ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Mật khẩu:</label>
+                                <input class="form-control" name="password" id="password" type="password" value="<?php echo isset($password) ? $password : '' ?>" required>
+                            </div>
+                            <label class="error">
+                                <?php
+                                if (isset($error))
+                                {
+                                    switch ($error) {
+                                        case 'notFound':
+                                            echo 'Không tìm thấy tài khoản';
+                                            break;
+                                        case 'inactive':
+                                            echo 'Tài khoản không hoạt động';
+                                            break;
+                                        case 'wrongPassword':
+                                            echo 'Sai mật khẩu';
+                                            break;
+                                        case 'badRequest':
+                                        default:
+                                            echo 'Lỗi xảy ra khi đăng nhập';
+                                    }
+                                }
+                                else
+                                {
+                                    echo '&nbsp;';
+                                }
+                                ?>
+                            </label>
+                            <!-- Change this to a button or input when using this as a form -->
+                            <button type="submit" class="btn btn-lg btn-success btn-block">Đăng nhập</a>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

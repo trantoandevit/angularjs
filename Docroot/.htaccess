@@ -1,0 +1,19 @@
+RewriteEngine On
+RewriteBase /hcc-bacgiang-dsdv/
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+
+#doc file dinh kem record type
+RewriteRule ^upload/record_type/(.*)$ record_type&1 [R=301,L]
+
+#render link service
+RewriteRule ^webservice(.*)$ services.php [QSA,L]
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ index.php [QSA,L]
+
+

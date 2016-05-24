@@ -1,0 +1,241 @@
+<?php
+$this->addJs(array(
+    $this->themeUrl() . '/js/views/jquery.MultiFile.pack.js',
+    $this->themeUrl() . '/js/views/summernote.js',
+    $this->themeUrl() . '/js/views/angular-summernote.js',
+    $this->themeUrl() . '/js/views/summernote-vi-VN.js',
+    $this->themeUrl() . '/js/views/editRecord.js',
+    $this->themeUrl() . '/js/views/paging.js'
+));
+$this->addCss(array(
+    $this->themeUrl() . '/css/summernote.css'
+));
+$this->setNgApp('recordModule');
+?>
+<div ng-controller="recordCtrl">
+    <div class="col-sm-12 col-xs-12 form-group">
+        <h1>Thủ tục hành chính</h1>
+    </div>
+    <div class="col-sm-12 col-xs-12 form-group">
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-click="showNewModal()"><i class="fa fa-plus"></i>&nbsp Thêm mới</button>
+        <button type="button" class="btn btn-default" ng-click="deletes()"><i class="fa fa-trash"></i>&nbsp Xóa</button>
+        <button type="button" class="btn btn-default" ng-click="search()"><i class="fa fa-search"></i>&nbsp Lọc</button>
+        <button type="button" class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp Xóa bộ lọc</button>
+    </div>
+    <div class="col-sm-12 col-xs-12 form-group">
+        <label class="col-xs-3">Mã hoặc tên TTHC </label>
+        <input class="col-xs-3 col-xs-3" id="keyword" ng-model="filter.keyword" placeholder="Điền tên cần tìm kiếm">
+    </div>
+    <div class="col-sm-12 col-xs-12 form-group">
+        <label class="col-xs-3">Trạng thái</label>
+        <select class="col-xs-3" ng-model="filter.status" >
+            <option value="">-- Tất cả --</option>
+            <option value="1">Hoạt động</option>
+            <option value="0">Không hoạt động</option>
+        </select>
+    </div>
+    <div class="col-sm-12 col-xs-12 form-group">
+        <label class="col-xs-3">Đơn vị tiếp nhận hồ sơ</label>
+        <select class="col-xs-3" ng-model="filter.member" >
+            <option value="">-- Tất cả --</option>
+            <option ng-repeat="member in memberList" value="{{member.pk}}">{{member.c_name}}</option>
+        </select>
+    </div>
+    <h3  class='col-sm-12 col-xs-12' ng-if="recordList == ''"><br>Không có dữ liệu</h3>
+    <div class="col-sm-12 col-xs-12 table-member">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td><input type="checkbox" ng-model="checkAll"></td>
+                    <td></td>
+                    <td>Mã loại hồ sơ</td>
+                    <td>Tên loại hồ sơ</td>
+                    <td>Trạng thái hồ sơ</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in recordList">
+                    <td><input type="checkbox" id="{{record.pk}}"></td>
+                    <td class="tbl-actions center">
+                        <div class="dropdown">
+                            <a href="javascript:;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:;" data-toggle="modal" data-target="#myModal" ng-click="edit(record)">Sửa</a></li>
+                                <li><a href="javascript:;" ng-click="delete(record)">Xóa</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td ng-cloak>{{record.c_code}}</td>
+                    <td ng-cloak>{{record.c_name}}</td>
+                    <td ng-cloak>
+                        <span ng-if="record.c_status == true">Có hoạt động</span>
+                        <span ng-if="record.c_status == false">Không hoạt động</span></td>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="float:right">
+            <paging
+                page="pagging.page" 
+                page-size="pagging.pagesize"
+                total="pagging.total"
+                paging-action="pagging.pagingaction()"
+                scroll-top="true" 
+                hide-if-empty="true"
+                show-prev-next="true"
+                show-first-last="true"
+                text-first="Đầu"
+                text-last="Cuối"
+                text-next="Sau"
+                text-prev="Trước">
+            </paging>
+        </div>
+    </div>
+
+
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <form action="" method="post" enctype="multipart/form-data" name="frmUpload" id="frmUpload">
+            <input type="hidden"  id="pk" value="{{modal.pk}}" name="pk" />
+            <input type="hidden"  id="hdn_list_file_delete" value="" name="hdn_list_file_delete" />
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="col-xs-12">
+                        <h3>Quản lý đơn vị</h3>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Mã loại hồ sơ:</label>
+                        <div class="col-xs-8">          
+                            <input class="form-control" id="code" ng-model="modal.c_code" name="c_code" placeholder="Điền mã">
+                        </div>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Tên loại hồ sơ:</label>
+                        <div class="col-xs-8">          
+                            <input required class="form-control" id="code" ng-model="modal.c_name" name="c_name" placeholder="Điền tển">
+                        </div>
+                    </div>
+                    <div class="col-xs-12" style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Thuộc lĩnh vực:</label>
+                        <div class="col-xs-8"> 
+                            <select name="sel_fk_linh_vuc" class='form-control' ng-model="modal.fk_linh_vuc">
+                                <option value="">-- Chọn lĩnh vực --</option>
+                                <option ng-repeat="field in fieldList" value="{{field.pk}}">{{field.c_name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Đơn vị tiếp nhận:</label>
+                        <div class="col-xs-8">     
+                            <div ng-repeat="member in memberList">
+                                <label style="display:inline-block">
+                                    <input name="chk_member[]" type="checkbox" value="{{member.pk}}" ng-model="modal.memberChecked[member.pk]" >
+                                    {{member.c_name}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Phạm vi:</label>
+                        <div class="col-xs-8">
+                            <div class="radio">
+                                <label><input type="radio" name="rd_scope" ng-model="modal.c_scope" value="0" >Cấp xã/phường</label>
+                            </div>
+                            <div class="radio">
+                                <label><input type="radio" name="rd_scope" ng-model="modal.c_scope"  value="1">Liên thông xã->huyện</label>
+                            </div>
+                            <div class="radio">
+                                <label><input type="radio" name="rd_scope" ng-model="modal.c_scope"  value="2">Liên thông huyện->xã</label>
+                            </div>
+                            <div class="radio">
+                                <label><input type="radio" name="rd_scope" ng-model="modal.c_scope"  value="3">Cấp huyện</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Thứ tự hiển thị:</label>
+                        <div class="col-xs-8">          
+                            <input name="c_order" class="form-control" id="code" ng-model="modal.c_order" placeholder="Thứ tự">
+                        </div>
+                    </div>
+                    <div class='col-xs-12' style="padding:5px 0;">
+                        <label class="control-label col-xs-4"></label>
+                        <div class="col-xs-8">          
+                            <label class="control-label"><input name="c_status" type="checkbox" ng-model="modal.c_status"> Hoạt động</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Thông tin hướng dẫn:</label>
+                        <div class="col-xs-8"> 
+                            <textarea style='display:none' name="c_content" class='form-control' style='height:150px' ng-model="modal.c_content">          
+                            </textarea>
+                            <summernote lang="vi-VN" height='150' ng-model="modal.c_content"></summernote>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">File đính kèm:</label>
+                        <div class="col-xs-8"> 
+                            <input type="file" id="file" name="files[]" multiple="multiple" accept="<?php echo str_replace(',', ',.', CONST_TYPE_FILE_ACCEPT); ?>" />
+                            <div id="listFiles">
+                            </div>
+                            <div id="listFilesOld">
+                                <li  ng-repeat="attachment in modal.attachments" id='listFile{{attachment.pk}}'>
+                                    {{attachment.c_description}}
+                                    <a href="javascript:void(0)" style="color: red" ng-click="deletedAttachment(attachment)">
+                                        <i style='margin-left:10px'class="fa fa-times" ></i>
+                                    </a>
+                                </li>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="padding:5px 0;">
+                        <label class="control-label col-xs-4" for="code">Thêm file đính kèm:</label>
+                        <div class="col-xs-8" id='attachment-area'>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" style="padding:5px 15px;">
+                        <button style='float:right' type="button" class="btn btn-default" onclick="addAttachment()">Thêm file đính kèm</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" ng-click="Update()">Cập nhật</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Hủy bỏ</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+</div>
+<style>
+    .table-member
+    {
+        padding-top: 15px;
+        min-height: 500px;
+    }
+    .table-member::-webkit-scrollbar {
+        width: 8px;
+    }
+    .table-member::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    } 
+    .table-member::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        background: rgb(199,199,199); 
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    }
+    .no-padding
+    {
+        padding:0;
+    }
+    #frmUpload
+    {
+        min-height: 500px;
+        max-height: 900px;
+        overflow: scroll;
+    }
+</style>

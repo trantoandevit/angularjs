@@ -1,0 +1,59 @@
+<style>
+    #user-permission legend,
+    #user-group legend{margin-bottom: 0;}
+    #user-permission td,
+    #user-group td{padding-left: 20px;}
+    #modal-user .modal-body{padding: 0;}
+    #modal-user .tab-content{padding: 15px;}
+</style>
+
+<form method="post" ng-submit="submitUser($event)" class="form-horizontal form-validate">
+    <div id="modal-user" class="modal fade" tabindex="-1" role="dialog" ng-dom="modalUser">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Người dùng: {{editingUser.fullName}}</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-justified" role="tablist" onclick="setTimeout(function () {
+                                $(window).trigger('resize');
+                            }, 500)">
+                        <li role="presentation" class="active">
+                            <a href="#user-general" aria-controls="user-general" role="tab" data-toggle="tab">Thông tin cơ bản</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#user-group" aria-controls="user-group" role="tab" data-toggle="tab">Nhóm</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#user-permission" aria-controls="user-permission" role="tab" data-toggle="tab">Phân quyền</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="user-general" role="tabpanel" class="tab-pane fade in active">
+                            <?php require __DIR__ . '/editUser/userGeneral.php' ?>
+                        </div><!--tab-->
+                        <div id="user-group" role="tabpanel" class="tab-pane fade">
+                            <?php require __DIR__ . '/editUser/userGroup.php' ?>
+                        </div>
+                        <div id="user-permission" role="tabpanel" class="tab-pane fade">
+                            <?php require __DIR__ . '/editUser/userPermission.php' ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <i class="fa fa-circle-o-notch fa-spin" ng-if="ajax.submit"></i>
+                    <label class="check">
+                        <input type="checkbox" ng-model="editingUser.insertAndOpen"/>
+                        <before></before>
+                        <after></after>&nbsp;
+                        Ghi & thêm mới&nbsp;
+                    </label>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="ajax.submit">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary" ng-disabled="ajax.checkUniqueAccount || ajax.submit">Ghi lại</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</form>

@@ -1,0 +1,31 @@
+<?php
+$this->setTitle('Quản lý ứng dụng');
+
+use Libs\Setting;
+?>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1 class="page-header">Quản lý ứng dụng</h1>
+    </div>
+</div>
+
+<form method="get" action="">
+    <table class="table table-bordered table-hover table-striped">
+        <?php $i = 1; ?>
+        <?php foreach (Setting::getAllApp() as $appId): ?>
+            <?php $setting = new Setting($appId) ?>
+            <tr>
+                <td style="width: 100%;"><?php echo $i++ . '. ' . $setting->xml->attributes()->name ?></td>
+                <td style="min-width: 100px;text-align: right">
+                    <?php if ($setting->xml->attributes()->active == 'true'): ?>
+                        <button type="submit" class="btn btn-default btn-sm" name="deactivate" value="<?php echo $appId ?>">Vô hiệu hóa</button>
+                    <?php else: ?>
+                        <button type="submit" class="btn btn-success btn-sm" name="activate" value="<?php echo $appId ?>">Kích hoạt</button>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</form>
+

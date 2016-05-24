@@ -1,0 +1,179 @@
+<?php
+/* @var $this \Apps\Cores\Views\Layouts\TwoColsLayout */
+$this->addJs(array(
+    $this->themeUrl() . '/js/views/groupCtrl.js',
+    $this->themeUrl() . '/components/UserPicker/UserPicker.js'
+));
+?>
+
+<style>
+    #modalEdit .modal-body{padding: 0;}
+    #modalEdit .tab-content{padding: 15px;}
+    #modalEdit legend{margin-bottom: 0;}
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1 class="page-header">Nhóm</h1>
+    </div>
+</div>
+
+<angular ng-cloak ng-controller="groupCtrl">
+    <table class="table table-bordered table-striped table-hover table-record">
+        <thead>
+            <tr>
+                <td colspan="5">
+                    <button class="btn btn-default" ng-click="edit()"><i class="fa fa-plus"></i> Thêm mới</button>
+                    <button class="btn btn-default" ng-click="delete()" ng-disabled="getChecked().length == 0"><i class="fa fa-trash"></i> Xóa</button>
+                </td>
+            </tr>
+            <tr>
+                <th style="min-width: 50px;" class="center">
+                    <label class="check">
+                        <input type="checkbox" />
+                        <before></before>
+                        <after></after>
+                    </label>
+                </th>
+                <th style="min-width: 50px;" class="center">&nbsp;</th>
+                <th style="min-width: 50px;">ID</th>
+                <th style="min-width: 150px;">Mã nhóm</th>
+                <th style="width: 100%;">Tên nhóm</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="group in groups" ng-class="<?php echo "{'stt-active': group.stt==1, 'stt-inactive': group.stt!=1}" ?>">
+                <td class="center">
+                    <label class="check">
+                        <input type="checkbox"  ng-model="checked[group.pk]"/>
+                        <before></before>
+                        <after></after>
+                    </label>
+                </td>
+                <td class="tbl-actions center">
+                    <div class="dropdown">
+                        <a href="javascript:;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;" ng-click="edit(group)">Sửa</a></li>
+                            <li><a href="javascript:;" ng-click="delete(group.pk)">Xóa</a></li>
+                        </ul>
+                    </div>
+                </td>
+                <td>{{group.pk}}</td>
+                <td>{{group.groupCode}}</td>
+                <td><a href="javascript:;" ng-click="edit(group)">{{group.groupName}}</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form class="form-horizontal form-validate">
+        <!-- Modal -->
+        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ng-dom="modalEdit">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Nhóm</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs nav-justified" role="tablist">
+                            <li role="presentation" ng-class="<?php echo "{active: tab==0}" ?>" ng-click="setTab(0)"><a href="javascript:;">Thông tin nhóm</a></li>
+                            <li role="presentation" ng-class="<?php echo "{active: tab==1}" ?>" ng-click="setTab(1)"><a href="javascript:;">Thành viên <span ng-if="editing.users">({{editing.users.length}})</span></a></li>
+                            <li role="presentation" ng-class="<?php echo "{active: tab==2}" ?>" ng-click="setTab(2)"><a href="javascript:;">Phân quyền</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div  class="tab-pane "  ng-class="<?php echo "{active: tab==0}" ?>">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4" for="txt-code"><?php echo static::HTML_REQUIRED ?> Mã nhóm:</label>
+                                    <div class="col-xs-8">
+                                        <input type="text" id="txt-code" ng-model="editing.groupCode" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4" for="txt-name"><?php echo static::HTML_REQUIRED ?> Tên nhóm:</label>
+                                    <div class="col-xs-8">
+                                        <input type="text" id="txt-name" ng-model="editing.groupName" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-8 col-xs-offset-4">
+                                        <label class="check">
+                                            <input type="checkbox"  ng-model="editing.stt"/>
+                                            <before></before>
+                                            <after></after>
+                                            &nbsp;Hoạt động
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="tab-pane" ng-class="<?php echo "{active: tab==1}" ?>">
+                                <input type="text" class="form-control" style="width: 300px" placeholder="tìm kiếm">
+                                <h4></h4>
+                                <table class="table table-bordered table-hover table-striped table-record">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="2">
+                                                <button class="btn btn-default" ng-click="pickUser()"><i class="fa fa-plus"></i> Thêm thành viên</button>
+                                                <button class="btn btn-default" ng-click="removeUser()" ng-disabled="!getCheckedUsers().length"><i class="fa fa-remove"></i> Loại khỏi nhóm</button>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-if="editing.users && !editing.users.length">
+                                            <td colspan="2" class="center">Chưa có thành viên.</td>
+                                        </tr>
+                                        <tr ng-repeat="user in editing.users" ng-class="<?php echo "{'stt-active': user.stt == 1, 'stt-inactive': user.stt != 1}" ?>" >
+                                            <td class="center" style="min-width: 50px;">
+                                                <label class="check">
+                                                    <input type="checkbox" id="chk-{{$index}}" ng-model="editing.checked[user.pk]"/>
+                                                    <before></before>
+                                                    <after></after>
+                                                </label>
+                                            </td>
+                                            <td style="width: 100%;">
+                                                <label for="chk-{{$index}}">{{user.fullName}}</label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div  class="tab-pane tab-permission" ng-class="<?php echo "{active: tab==2}" ?>">
+                                <div ng-init="selectedAppPem = '0'"></div>
+                                <select class="form-control" ng-model="selectedAppPem">
+                                    <option ng-repeat="app in permissions" value="{{$index}}">{{app.name}}</option>
+                                </select>
+                                <h4></h4>
+                                <fieldset ng-repeat="group in permissions[selectedAppPem]['groups']">
+                                    <legend style="">{{group.name}}</legend>
+
+                                    <table class='table-bordered table table-striped table-hover'>
+                                        <tr ng-repeat="pem in group.permissions">
+                                            <td>
+                                                <label class="check" value="pem.name">
+                                                    <input type="checkbox" value="{{pem.id}}" ng-checked="editing.permissions.indexOf(pem.id) != -1" ng-click="togglePermission($event)"/>
+                                                    <before></before>
+                                                    <after></after>&nbsp;
+                                                    {{pem.name}}
+                                                </label>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </fieldset>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Hủy bỏ</button>
+                        <button type="button" class="btn btn-primary" ng-click="save()" ng-disabled="ajax.save">Ghi lại</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div ng-user-picker></div>
+</angular>
